@@ -1,0 +1,41 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": false,
+    "declaration": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "lib": [
+      "es5",
+      "es2015.collection",
+      "dom"
+    ],
+    "target": "es5",
+    "out": "CIFTools.js"
+  },
+  "files": [
+    "./Version.ts",
+    "./Utils/ChunkedArray.ts",
+    "./Utils/NumberParsers.ts",
+    "./Utils/StringWriter.ts",
+    "./Dictionary.ts",
+    "./Parser.ts",
+    "./Writer.ts",
+    "./Text/Dictionary.ts",
+    "./Text/Parser.ts",
+    "./Text/Writer.ts",
+    "./Binary/MessagePack/Decode.ts",
+    "./Binary/MessagePack/Encode.ts",
+    "./Binary/MessagePack/Utf8.ts",
+    "./Binary/Decoder.ts",
+    "./Binary/Dictionary.ts",
+    "./Binary/Encoder.ts",
+    "./Binary/Encoding.ts",
+    "./Binary/Parser.ts",
+    "./Binary/Writer.ts",
+    "./Module.ts"
+  ]
+}

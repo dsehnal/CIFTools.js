@@ -1,0 +1,1 @@
+This examples shows how to download data from the [CoordinateServer](webchemdev.ncbr.muni.cz/CoordinateServer) in CIF and BinaryCIF format and display the data in JSON for comparison.

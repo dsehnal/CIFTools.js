@@ -1,0 +1,23 @@
+{
+  "name": "ciftools.js",
+  "version": "1.0.0",
+  "description": "A library for handling text and binary CIF files.",
+  "scripts": {},
+  "main": "build/CIFTools.js",
+  "author": "David Sehnal <david.sehnal@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dsehnal/CIFTools.js"
+  },
+  "bugs": {
+    "url": "https://github.com/dsehnal/CIFTools.js/issues"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-insert": "^0.5.0",
+    "gulp-typescript": "^2.14.1",
+    "merge2": "^1.0.2",
+    "typescript": "^2.0.3"
+  }
+}

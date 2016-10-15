@@ -1,0 +1,17 @@
+data_EXAMPLE
+#
+loop_
+_my_category.id
+_my_category.token
+_my_category.value
+1 tok_1 1 
+2 tok_2 1.414 
+3 tok_3 1.732 
+4 tok_4 2 
+5 tok_5 2.236 
+6 tok_6 2.449 
+7 tok_7 2.646 
+8 tok_8 2.828 
+9 tok_9 3 
+10 tok_10 3.162 
+#
