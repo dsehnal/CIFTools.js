@@ -37,13 +37,13 @@ var CIFTools = require('./CIFTools'); // or just 'CIFTools' if you place it in t
 To parse text CIF, use:
 
 ```JavaScript
-var parsed = CIFTools.Binary.parse(inputString);
+var parsed = CIFTools.Text.parse(inputString);
 ```
 
 For BinaryCIF, use:
 
 ```JavaScript
-var parsed = CIFTools.Text.parse(inputArrayBuffer);
+var parsed = CIFTools.Binary.parse(inputArrayBuffer);
 ```
 
 To get data from the result:
