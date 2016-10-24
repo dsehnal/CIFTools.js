@@ -1,6 +1,3 @@
-
-; var __CIFTools = function () {
-  'use strict';
 /*
  * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
  */
@@ -2964,14 +2961,3 @@ var CIFTools;
         Binary.Writer = Writer;
     })(Binary = CIFTools.Binary || (CIFTools.Binary = {}));
 })(CIFTools || (CIFTools = {}));
-  return CIFTools;
-}
-if (typeof module === 'object' && typeof module.exports === 'object') {
-  module.exports = __CIFTools();
-} else if (typeof define === 'function' && define.amd) {
-  define(['require'], function(require) { return __CIFTools(); })
-} else {
-  var __target = !!window ? window : this;
-  __target.CIFTools = __CIFTools();
-}
-

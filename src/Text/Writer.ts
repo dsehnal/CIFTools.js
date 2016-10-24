@@ -10,10 +10,20 @@ namespace CIFTools.Text {
     export class Writer<Context> implements CIFTools.Writer<Context> {
         private writer = StringWriter.create();
         private encoded = false;
+        private dataBlockCreated = false;
+
+        startDataBlock(header: string) {
+            this.dataBlockCreated = true;
+            StringWriter.write(this.writer, `data_${(header || '').replace(/[ \n\t]/g, '').toUpperCase()}\n#\n`);
+        }
 
         writeCategory(category: CategoryProvider, contexts?: Context[]) {
             if (this.encoded) {
                 throw new Error('The writer contents have already been encoded, no more writing.');
+            }
+
+            if (!this.dataBlockCreated) {
+                throw new Error('No data block created.');
             }
 
             let src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
@@ -37,8 +47,7 @@ namespace CIFTools.Text {
             StringWriter.writeTo(this.writer, stream);
         }
 
-        constructor(header: string) {
-            StringWriter.write(this.writer, `data_${(header || '').replace(/[ \n\t]/g, '').toUpperCase()}\n#\n`);
+        constructor() {
         }
     }
 

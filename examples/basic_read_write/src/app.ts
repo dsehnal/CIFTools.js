@@ -121,8 +121,11 @@ function create_CIF_and_BinarCIF() {
     let data = createSampleData();
     let ctx = <Context>{ data };
 
-    let textWriter = new Tools.Text.Writer('Example');
-    let binaryWriter = new Tools.Binary.Writer('Example', 'Example Writer');
+    let textWriter = new Tools.Text.Writer();
+    let binaryWriter = new Tools.Binary.Writer('Example Writer');
+
+    textWriter.startDataBlock('Example');
+    binaryWriter.startDataBlock('Example');
 
     textWriter.writeCategory(createMyCategoryCategory, [ctx]);
     binaryWriter.writeCategory(createMyCategoryCategory, [ctx]);

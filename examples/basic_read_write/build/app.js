@@ -81,8 +81,10 @@ function createFileAndWriter(filename) {
 function create_CIF_and_BinarCIF() {
     var data = createSampleData();
     var ctx = { data: data };
-    var textWriter = new Tools.Text.Writer('Example');
-    var binaryWriter = new Tools.Binary.Writer('Example', 'Example Writer');
+    var textWriter = new Tools.Text.Writer();
+    var binaryWriter = new Tools.Binary.Writer('Example Writer');
+    textWriter.startDataBlock('Example');
+    binaryWriter.startDataBlock('Example');
     textWriter.writeCategory(createMyCategoryCategory, [ctx]);
     binaryWriter.writeCategory(createMyCategoryCategory, [ctx]);
     textWriter.encode();

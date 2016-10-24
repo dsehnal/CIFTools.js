@@ -23,8 +23,9 @@ namespace CIFTools {
     export type OutputStream = { writeString: (data: string) => boolean, writeBinary: (data: Uint8Array) => boolean }
 
     export interface Writer<Context> {
+        startDataBlock(header: string): void,
         writeCategory(category: CategoryProvider, contexts?: Context[]): void,
-        encode(): void;
+        encode(): void,
         flush(stream: OutputStream): void
     }
 }

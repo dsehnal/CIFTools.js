@@ -57,12 +57,23 @@ namespace CIFTools.Binary {
 
     export class Writer<Context> implements CIFTools.Writer<Context> {
         private data: EncodedFile;
-        private dataBlock: EncodedDataBlock;
+        private dataBlocks: EncodedDataBlock[] = [];
         private encodedData: Uint8Array;
+
+        startDataBlock(header: string) {
+            this.dataBlocks.push({
+                header: (header || '').replace(/[ \n\t]/g, '').toUpperCase(),
+                categories: []
+            });
+        }
 
         writeCategory(category: CategoryProvider, contexts?: Context[]) {
             if (!this.data) {
                 throw new Error('The writer contents have already been encoded, no more writing.');
+            }
+
+            if (!this.dataBlocks.length) {
+                throw new Error('No data block created.');
             }
 
             let src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
@@ -77,28 +88,24 @@ namespace CIFTools.Binary {
             for (let f of first.desc.fields) {
                 cat.columns.push(encodeField(f, data, count));
             }
-            this.dataBlock.categories.push(cat);
+            this.dataBlocks[this.dataBlocks.length - 1].categories.push(cat);
         }
 
         encode() {
             this.encodedData = MessagePack.encode(this.data);
             this.data = <any>null;
-            this.dataBlock = <any>null;
+            this.dataBlocks = <any>null;
         }
 
         flush(stream: OutputStream) {
             stream.writeBinary(this.encodedData);
         }
 
-        constructor(header: string, encoder: string) {
-            this.dataBlock = {
-                header: (header || '').replace(/[ \n\t]/g, '').toUpperCase(),
-                categories: []
-            };
+        constructor(encoder: string) {
             this.data = {
                 encoder,
                 version: Binary.VERSION,
-                dataBlocks: [this.dataBlock]
+                dataBlocks: this.dataBlocks
             };
         }
     }
