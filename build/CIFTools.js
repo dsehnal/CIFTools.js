@@ -2670,10 +2670,11 @@ var CIFTools;
                 }
                 var output = new data.constructor(data.length);
                 var origin = data[0];
-                output[0] = 0;
+                output[0] = data[0];
                 for (var i = 1, n = data.length; i < n; i++) {
-                    output[i] = data[i] - data[i - 1] - origin;
+                    output[i] = data[i] - data[i - 1];
                 }
+                output[0] = 0;
                 return {
                     encodings: [{ kind: 'Delta', origin: origin, srcType: srcType }],
                     data: output

@@ -193,10 +193,11 @@ namespace CIFTools.Binary {
 
             let output = new (data as any).constructor(data.length);
             let origin = data[0];
-            output[0] = 0;
+            output[0] = data[0];
             for (let i = 1, n = data.length; i < n; i++) {
-                output[i] = data[i] - data[i - 1] - origin;
+                output[i] = data[i] - data[i - 1];
             }
+            output[0] = 0;
             return {
                 encodings: [{ kind: 'Delta', origin, srcType }],
                 data: output
