@@ -186,18 +186,19 @@ namespace CIFTools.Binary {
             }
             if (!data.length) {
                 return {
-                    encodings: [{ kind: 'Delta', srcType }],
+                    encodings: [{ kind: 'Delta', origin: 0, srcType }],
                     data: new (data as any).constructor(0)
                 };
             }
 
             let output = new (data as any).constructor(data.length);
-            output[0] = data[0];
+            let origin = data[0];
+            output[0] = 0;
             for (let i = 1, n = data.length; i < n; i++) {
-                output[i] = data[i] - data[i - 1];
+                output[i] = data[i] - data[i - 1] - origin;
             }
             return {
-                encodings: [{ kind: 'Delta', srcType }],
+                encodings: [{ kind: 'Delta', origin, srcType }],
                 data: output
             };
         }

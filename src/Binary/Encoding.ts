@@ -5,9 +5,15 @@
 namespace CIFTools.Binary {
     "use strict";
 
-    export const VERSION = '0.1.0';
+    export const VERSION = '0.2.0';
 
-    export type Encoding = Encoding.ByteArray | Encoding.FixedPoint | Encoding.RunLength | Encoding.Delta | Encoding.IntegerPacking | Encoding.StringArray
+    export type Encoding = 
+          Encoding.ByteArray 
+        | Encoding.FixedPoint 
+        | Encoding.RunLength 
+        | Encoding.Delta 
+        | Encoding.IntegerPacking 
+        | Encoding.StringArray;
 
     export interface EncodedFile {
         version: string,
@@ -95,6 +101,7 @@ namespace CIFTools.Binary {
         // T[] -> T[]
         export interface Delta {
             kind: 'Delta',
+            origin: number,
             srcType: IntDataType
         }
 

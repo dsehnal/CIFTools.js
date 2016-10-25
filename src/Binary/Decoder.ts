@@ -125,7 +125,7 @@ namespace CIFTools.Binary {
             let n = data.length;
             let output = getIntArray(encoding.srcType, n);
             if (!n) return output;
-            output[0] = data[0];
+            output[0] = data[0] + (encoding.origin | 0);
             for (let i = 1; i < n; ++i) {
                 output[i] = data[i] + output[i - 1];
             }
