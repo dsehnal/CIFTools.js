@@ -390,7 +390,7 @@ declare namespace CIFTools.Text {
     }
 }
 declare namespace CIFTools.Text {
-    function parse(data: string): ParserError | ParserSuccess<CIFTools.File>;
+    function parse(data: string): ParserResult<CIFTools.File>;
 }
 declare namespace CIFTools.Text {
     class Writer<Context> implements CIFTools.Writer<Context> {
