@@ -156,19 +156,19 @@ namespace CIFTools.Text {
         }
 
         let escape = false, escapeCharStart = '\'', escapeCharEnd = '\' ';
-        let whitespace = false;
+        let hasWhitespace = false; 
         let hasSingle = false;
         let hasDouble = false;
         for (let i = 0, _l = val.length - 1; i < _l; i++) {
             let c = val.charCodeAt(i);
 
             switch (c) {
-                case 9: whitespace = true; break; // \t
+                case 9: hasWhitespace = true; break; // \t
                 case 10: // \n
                     StringWriter.writeSafe(writer, '\n;' + val);
                     StringWriter.writeSafe(writer, '\n; ')
                     return;
-                case 32: whitespace = true; break; // ' '
+                case 32: hasWhitespace = true; break; // ' '
                 case 34: // "
                     if (hasSingle) {
                         StringWriter.writeSafe(writer, '\n;' + val);
@@ -180,7 +180,7 @@ namespace CIFTools.Text {
                     escape = true;
                     escapeCharStart = '\'';
                     escapeCharEnd = '\' ';
-                    break;
+                    break;                                
                 case 39: // '
                     if (hasDouble) {
                         StringWriter.writeSafe(writer, '\n;' + val);
@@ -196,7 +196,8 @@ namespace CIFTools.Text {
             }
         }
 
-        if (!escape && (val.charCodeAt(0) === 59 /* ; */ || whitespace)) {
+        let fst = val.charCodeAt(0);
+        if (!escape && (fst === 35 /* # */ || fst === 59 /* ; */ || hasWhitespace)) {
             escapeCharStart = '\'';
             escapeCharEnd = '\' ';
             escape = true;

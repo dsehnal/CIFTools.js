@@ -19,6 +19,6 @@
     "gulp-rename": "^1.2.2",
     "gulp-typescript": "^2.14.1",
     "merge2": "^1.0.2",
-    "typescript": "^2.0.6"
+    "typescript": "^2.1.1"
   }
 }
