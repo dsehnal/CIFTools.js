@@ -1,5 +1,5 @@
 "use strict";
-var fs = require("fs");
+var fs = require('fs');
 var Tools = require('../../../build/CIFTools');
 // if CIFTools.js is present in node_modules it is possible to use
 // import * as Tools from 'CIFTools'
@@ -43,21 +43,30 @@ read_mmCIF('data/1cbs.cif');
 function createSampleData() {
     var size = 10;
     var id = new Int32Array(size);
+    var signedValue = new Int32Array(size);
+    var unsignedValue = new Int32Array(size);
     var token = [];
     var value = new Float32Array(size);
     for (var i = 1; i <= size; i++) {
         id[i - 1] = i;
+        signedValue[i - 1] = i - ((size / 2) | 0);
+        unsignedValue[i - 1] = i * i;
         token[i - 1] = 'tok_' + i;
         value[i - 1] = Math.sqrt(i);
     }
-    return { id: id, token: token, value: value };
+    console.log(value);
+    return { id: id, signedValue: signedValue, unsignedValue: unsignedValue, token: token, value: value };
 }
 var E = Tools.Binary.Encoder;
 function createMyCategoryCategory(ctx) {
     var fields = [
         { name: 'id', string: function (data, i) { return data.id[i].toString(); }, number: function (data, i) { return data.id[i]; }, typedArray: Int32Array, encoder: E.by(E.delta).and(E.runLength).and(E.integerPacking) },
+        { name: 'signedValue', string: function (data, i) { return data.signedValue[i].toString(); }, number: function (data, i) { return data.signedValue[i]; }, typedArray: Int32Array, encoder: E.by(E.integerPacking) },
+        { name: 'unsignedValue', string: function (data, i) { return data.unsignedValue[i].toString(); }, number: function (data, i) { return data.unsignedValue[i]; }, typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'token', string: function (data, i) { return data.token[i]; } },
+        { name: 'valueF', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.float32) },
         { name: 'value', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.fixedPoint(1000)).and(E.delta).and(E.integerPacking) },
+        { name: 'quantValue', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.intervalQuantizaiton(0, 5, 254)).and(E.integerPacking) },
     ];
     return {
         data: ctx.data,

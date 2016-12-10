@@ -61,6 +61,8 @@ read_mmCIF('data/1cbs.cif');
 
 interface Data {
     id: Int32Array,
+    signedValue: Int32Array,
+    unsignedValue: Int32Array,
     token: string[],
     value: Float32Array
 }
@@ -69,16 +71,22 @@ function createSampleData() {
     const size = 10;
 
     let id = new Int32Array(size);
+    let signedValue = new Int32Array(size);
+    let unsignedValue = new Int32Array(size);
     let token: string[] = [];
     let value = new Float32Array(size);
 
     for (let i = 1; i <= size; i++) {
         id[i - 1] = i;
+        signedValue[i - 1] = i - ((size / 2) | 0);
+        unsignedValue[i - 1] = i * i;
         token[i - 1] = 'tok_' + i;
         value[i - 1] = Math.sqrt(i);
     }
 
-    return <Data>{ id, token, value };
+    console.log(value);
+
+    return <Data>{ id, signedValue, unsignedValue, token, value };
 }
 
 interface Context {
@@ -92,8 +100,12 @@ function createMyCategoryCategory(ctx: Context) {
 
     let fields: CIFTools.FieldDesc<T>[] = [
         { name: 'id', string: (data, i) => data.id[i].toString(), number: (data, i) => data.id[i], typedArray: Int32Array, encoder: E.by(E.delta).and(E.runLength).and(E.integerPacking) },
+        { name: 'signedValue', string: (data, i) => data.signedValue[i].toString(), number: (data, i) => data.signedValue[i], typedArray: Int32Array, encoder: E.by(E.integerPacking) },
+        { name: 'unsignedValue', string: (data, i) => data.unsignedValue[i].toString(), number: (data, i) => data.unsignedValue[i], typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'token', string: (data, i) => data.token[i] },
+        { name: 'valueF', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.float32) },
         { name: 'value', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.fixedPoint(1000)).and(E.delta).and(E.integerPacking) },
+        { name: 'quantValue', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.intervalQuantizaiton(0, 5, 254)).and(E.integerPacking) },
     ];
 
     return <CIFTools.CategoryInstance<T>>{

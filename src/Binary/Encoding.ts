@@ -5,13 +5,14 @@
 namespace CIFTools.Binary {
     "use strict";
 
-    export const VERSION = '0.2.0';
+    export const VERSION = '0.3.0';
 
     export type Encoding = 
           Encoding.ByteArray 
         | Encoding.FixedPoint 
         | Encoding.RunLength 
         | Encoding.Delta 
+        | Encoding.IntervalQuantization
         | Encoding.IntegerPacking 
         | Encoding.StringArray;
 
@@ -58,6 +59,7 @@ namespace CIFTools.Binary {
             Int16,
             Int32,
             Uint8,
+            Uint16,
             Float32,
             Float64
         }
@@ -66,16 +68,31 @@ namespace CIFTools.Binary {
             Int8,
             Int16,
             Int32,
-            Uint8
+            Uint8,
+            Uint16
         }
 
-        export function getIntDataType(data: (Int8Array | Int16Array | Int32Array | number[])): IntDataType {
+        export const enum FloatDataType {
+            Float32,
+            Float64
+        }
+
+        export function getIntDataType(data: (Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array)): IntDataType {
             let srcType: Encoding.IntDataType;
             if (data instanceof Int8Array) srcType = Encoding.IntDataType.Int8;
             else if (data instanceof Int16Array) srcType = Encoding.IntDataType.Int16;
             else if (data instanceof Int32Array) srcType = Encoding.IntDataType.Int32;
             else if (data instanceof Uint8Array) srcType = Encoding.IntDataType.Uint8;
+            else if (data instanceof Uint16Array) srcType = Encoding.IntDataType.Uint16;
             else throw new Error('Unsupported integer data type.');
+            return srcType;
+        }
+
+        export function getFloatDataType(data: (Float32Array | Float64Array)): FloatDataType {
+            let srcType: Encoding.FloatDataType;
+            if (data instanceof Float32Array) srcType = Encoding.FloatDataType.Float32;
+            else if (data instanceof Float64Array) srcType = Encoding.FloatDataType.Float64;
+            else throw new Error('Unsupported floating data type.');
             return srcType;
         }
 
@@ -85,30 +102,41 @@ namespace CIFTools.Binary {
             type: DataType
         }
 
-        // Float32[] -> Int32[]
+        // (Float32 | Float64)[] -> Int32[]
         export interface FixedPoint {
             kind: 'FixedPoint',
-            factor: number
+            factor: number,
+            srcType: FloatDataType
         }
 
-        // Int32[] -> Int32[]
+        // (Float32|Float64)[] -> Int32
+        export interface IntervalQuantization {
+            kind: 'IntervalQuantization',
+            min: number,
+            max: number,
+            numSteps: number,
+            srcType: FloatDataType
+        }
+
+        // (Uint8 | Int8 | Int16 | Int32)[] -> Int32[]
         export interface RunLength {
             kind: 'RunLength',
             srcType: IntDataType,
             srcSize: number
         }
 
-        // T[] -> T[]
+        // T=(Int8Array | Int16Array | Int32Array)[] -> T[]
         export interface Delta {
             kind: 'Delta',
             origin: number,
             srcType: IntDataType
         }
 
-        // number[] -> (Int8 | Int16)[]
+        // Int32[] -> (Int8 | Int16 | Uint8 | Uint16)[]
         export interface IntegerPacking {
             kind: 'IntegerPacking',
             byteCount: number,
+            isUnsigned: boolean,
             srcSize: number
         }
 

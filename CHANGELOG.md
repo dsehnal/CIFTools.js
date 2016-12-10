@@ -1,3 +1,9 @@
+# 1.1.0
+* Added QuantizeInterval encoding.
+* Added unsigned integer packing.
+* Endiannes is now always little-endian.
+* Fixed int16/32 decoding.
+
 # 1.0.3
 * Handle # in strings in text CIF writer.
 
