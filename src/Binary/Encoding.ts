@@ -54,46 +54,42 @@ namespace CIFTools.Binary {
     }
 
     export namespace Encoding {
-        export const enum DataType {
-            Int8,
-            Int16,
-            Int32,
-            Uint8,
-            Uint16,
-            Float32,
-            Float64
-        }
 
         export const enum IntDataType {
-            Int8,
-            Int16,
-            Int32,
-            Uint8,
-            Uint16
+            Int8    = 1,
+            Int16   = 2,
+            Int32   = 3,
+            Uint8   = 4,
+            Uint16  = 5,
+            Uint32  = 6,
         }
 
         export const enum FloatDataType {
-            Float32,
-            Float64
+            Float32 = 32,
+            Float64 = 33
         }
 
-        export function getIntDataType(data: (Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array)): IntDataType {
-            let srcType: Encoding.IntDataType;
+        export type DataType = IntDataType | FloatDataType
+
+        export type IntArray = Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array
+        export type FloatArray = Float32Array | Float64Array
+
+        export function getDataType(data: IntArray | FloatArray): DataType {
+            let srcType: DataType;
             if (data instanceof Int8Array) srcType = Encoding.IntDataType.Int8;
             else if (data instanceof Int16Array) srcType = Encoding.IntDataType.Int16;
             else if (data instanceof Int32Array) srcType = Encoding.IntDataType.Int32;
             else if (data instanceof Uint8Array) srcType = Encoding.IntDataType.Uint8;
             else if (data instanceof Uint16Array) srcType = Encoding.IntDataType.Uint16;
+            else if (data instanceof Uint32Array) srcType = Encoding.IntDataType.Uint32;
+            else if (data instanceof Float32Array) srcType = Encoding.FloatDataType.Float32;
+            else if (data instanceof Float64Array) srcType = Encoding.FloatDataType.Float64;
             else throw new Error('Unsupported integer data type.');
             return srcType;
         }
 
-        export function getFloatDataType(data: (Float32Array | Float64Array)): FloatDataType {
-            let srcType: Encoding.FloatDataType;
-            if (data instanceof Float32Array) srcType = Encoding.FloatDataType.Float32;
-            else if (data instanceof Float64Array) srcType = Encoding.FloatDataType.Float64;
-            else throw new Error('Unsupported floating data type.');
-            return srcType;
+        export function isSignedIntegerDataType(data: IntArray) {
+            return data instanceof Int8Array || data instanceof Int16Array || data instanceof Int32Array;
         }
 
         // type[] -> Uint8[]

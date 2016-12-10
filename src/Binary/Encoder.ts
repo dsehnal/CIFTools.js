@@ -58,86 +58,58 @@ namespace CIFTools.Binary {
             return new Encoder([f]);
         }
 
-        function dataView(array: TypedArray) {
-            return new DataView(array.buffer, array.byteOffset, array.byteLength);
-        }
-
-        export function uint8(data: Uint8Array): Result {
+        function uint8(data: Uint8Array): Result {
             return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Uint8 }],
+                encodings: [{ kind: 'ByteArray', type: Encoding.IntDataType.Uint8 }],
                 data
             };
         }
 
-        export function int8(data: Int8Array): Result {
+        function int8(data: Int8Array): Result {
             return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Int8 }],
+                encodings: [{ kind: 'ByteArray', type: Encoding.IntDataType.Int8 }],
                 data: new Uint8Array(data.buffer, data.byteOffset)
             };
         }
 
-        export function int16(data: Int16Array): Result {
-            let result = new Uint8Array(data.length * 2);
-            let view = dataView(result);
+        const writers = {
+            [Encoding.IntDataType.Int16]: function (v: DataView, i: number, a: number) { v.setInt16(2 * i, a, true) },
+            [Encoding.IntDataType.Uint16]: function (v: DataView, i: number, a: number) { v.setUint16(2 * i, a, true) },
+            [Encoding.IntDataType.Int32]: function (v: DataView, i: number, a: number) { v.setInt32(4 * i, a, true) },
+            [Encoding.IntDataType.Uint32]: function (v: DataView, i: number, a: number) { v.setUint32(4 * i, a, true) },
+            [Encoding.FloatDataType.Float32]: function (v: DataView, i: number, a: number) { v.setFloat32(4 * i, a, true) },
+            [Encoding.FloatDataType.Float64]: function (v: DataView, i: number, a: number) { v.setFloat64(8 * i, a, true) }
+        }
+
+        const byteSizes = {
+            [Encoding.IntDataType.Int16]: 2,
+            [Encoding.IntDataType.Uint16]: 2,
+            [Encoding.IntDataType.Int32]: 4,
+            [Encoding.IntDataType.Uint32]: 4,
+            [Encoding.FloatDataType.Float32]: 4,
+            [Encoding.FloatDataType.Float64]: 8
+        }
+
+        export function byteArray(data: Encoding.FloatArray | Encoding.IntArray) {
+            let type = Encoding.getDataType(data);
+
+            if (type === Encoding.IntDataType.Int8) return int8(data);
+            else if (type === Encoding.IntDataType.Uint8) return uint8(data);
+
+            let result = new Uint8Array(data.length * byteSizes[type]);
+            let w = writers[type];
+            let view = new DataView(result.buffer);
             for (let i = 0, n = data.length; i < n; i++) {
-                view.setInt16(2 * i, data[i], true);
+                w(view, i, data[i]);
             }
             return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Int16 }],
+                encodings: [<Encoding.ByteArray>{ kind: 'ByteArray', type }],
                 data: result
             };
         }
 
-        export function uint16(data: Int16Array): Result {
-            let result = new Uint8Array(data.length * 2);
-            let view = dataView(result);
-            for (let i = 0, n = data.length; i < n; i++) {
-                view.setUint16(2 * i, data[i], true);
-            }
-            return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Uint16 }],
-                data: result
-            };
-        }
-
-        export function int32(data: Int32Array): Result {
-            let result = new Uint8Array(data.length * 4);
-            let view = dataView(result);
-            for (let i = 0, n = data.length; i < n; i++) {
-                view.setInt32(4 * i, data[i], true);
-            }
-            return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Int32 }],
-                data: result
-            };
-        }
-
-        export function float32(data: Float32Array): Result {
-            let result = new Uint8Array(data.length * 4);
-            let view = dataView(result);
-            for (let i = 0, n = data.length; i < n; i++) {
-                view.setFloat32(4 * i, data[i], true);
-            }
-            return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Float32 }],
-                data: result
-            };
-        }
-
-        export function float64(data: Float64Array): Result {
-            let result = new Uint8Array(data.length * 8);
-            let view = dataView(result);
-            for (let i = 0, n = data.length; i < n; i++) {
-                view.setFloat64(8 * i, data[i], true);
-            }
-            return {
-                encodings: [{ kind: 'ByteArray', type: Encoding.DataType.Float64 }],
-                data: result
-            };
-        }
-
-        function _fixedPoint(data: Float32Array | Float64Array, factor: number): Result {
-            let srcType = Encoding.getFloatDataType(data);
+        function _fixedPoint(data: Encoding.FloatArray, factor: number): Result {
+            let srcType = Encoding.getDataType(data) as Encoding.FloatDataType;
             let result = new Int32Array(data.length);
             for (let i = 0, n = data.length; i < n; i++) {
                 result[i] = Math.round(data[i] * factor);
@@ -149,8 +121,8 @@ namespace CIFTools.Binary {
         }
         export function fixedPoint(factor: number): Provider { return data => _fixedPoint(data, factor); }
         
-        function _intervalQuantizaiton(data: Float32Array | Float64Array, min: number, max: number, numSteps: number): Result {
-            let srcType = Encoding.getFloatDataType(data);
+        function _intervalQuantizaiton(data: Encoding.FloatArray, min: number, max: number, numSteps: number): Result {
+            let srcType = Encoding.getDataType(data) as Encoding.FloatDataType;
             if (!data.length) {
                 return {
                     encodings: [{ kind: 'IntervalQuantization', min, max, numSteps, srcType }],
@@ -181,8 +153,8 @@ namespace CIFTools.Binary {
         }
         export function intervalQuantizaiton(min: number, max: number, numSteps: number): Provider  { return data => _intervalQuantizaiton(data, min, max, numSteps); }
 
-        export function runLength(data: Uint8Array | Int8Array | Int16Array | Int32Array): Result {
-            let srcType = Encoding.getIntDataType(data);
+        export function runLength(data: Encoding.IntArray): Result {
+            let srcType = Encoding.getDataType(data) as Encoding.IntDataType;
             if (srcType === void 0) {
                 data = new Int32Array(data);
                 srcType = Encoding.IntDataType.Int32;
@@ -224,7 +196,11 @@ namespace CIFTools.Binary {
         }
 
         export function delta(data: Int8Array | Int16Array | Int32Array): Result {
-            let srcType = Encoding.getIntDataType(data);
+            if (!Encoding.isSignedIntegerDataType(data)) {
+                throw new Error('Only signed integer types can be encoded using delta encoding.');
+            }
+
+            let srcType = Encoding.getDataType(data) as Encoding.IntDataType;
             if (srcType === void 0) {
                 data = new Int32Array(data);
                 srcType = Encoding.IntDataType.Int32;
@@ -256,7 +232,7 @@ namespace CIFTools.Binary {
             return false;
         }
 
-        function packingSizeSigned(data: Int32Array, upperLimit: number) {
+        function packingSize(data: Int32Array, upperLimit: number) {
             let lowerLimit = -upperLimit - 1;
             let size = 0;
             for (let i = 0, n = data.length; i < n; i++) {
@@ -274,25 +250,10 @@ namespace CIFTools.Binary {
             return size;
         }
 
-        function packingSizeUnsigned(data: Int32Array, upperLimit: number) {
-            let size = 0;
-            for (let i = 0, n = data.length; i < n; i++) {
-                let value = data[i];
-                if (value === 0) {
-                    size += 1;
-                } else if (value === upperLimit) {
-                    size += 2;
-                } else {
-                    size += Math.ceil(value / upperLimit);
-                } 
-            }
-            return size;
-        }
-
         function determinePacking(data: Int32Array): { isSigned: boolean, size: number, bytesPerElement: number } {
             let signed = isSigned(data);
-            let size8 = signed ? packingSizeSigned(data, 0x7f) : packingSizeUnsigned(data, 0xff);
-            let size16 = signed ? packingSizeSigned(data, 0x7fff) : packingSizeUnsigned(data, 0xffff);
+            let size8 = signed ? packingSize(data, 0x7F) : packingSize(data, 0xFF);
+            let size16 = signed ? packingSize(data, 0x7FFF) : packingSize(data, 0xFFFF);
 
             if (data.length * 4 < size16 * 2) {
                 // 4 byte packing is the most effective
@@ -318,11 +279,16 @@ namespace CIFTools.Binary {
             };
         }
 
-        function integerPackingSigned(data: Int32Array, packing: { size: number, bytesPerElement: number }): Result {            
-            let upperLimit = packing.bytesPerElement === 1 ? 0x7F : 0x7FFF;
+        function _integerPacking(data: Int32Array, packing: { isSigned:boolean, size: number, bytesPerElement: number }): Result {            
+            let upperLimit = packing.isSigned 
+                ? (packing.bytesPerElement === 1 ? 0x7F : 0x7FFF)
+                : (packing.bytesPerElement === 1 ? 0xFF : 0xFFFF);
+
             let lowerLimit = -upperLimit - 1;
             let n = data.length;
-            let packed = packing.bytesPerElement === 1 ? new Int8Array(packing.size) : new Int16Array(packing.size);
+            let packed = packing.isSigned 
+                ? packing.bytesPerElement === 1 ? new Int8Array(packing.size) : new Int16Array(packing.size)
+                : packing.bytesPerElement === 1 ? new Uint8Array(packing.size) : new Uint16Array(packing.size);
             let j = 0;
             for (let i = 0; i < n; i++) {
                 let value = data[i];
@@ -343,32 +309,16 @@ namespace CIFTools.Binary {
                 ++j;
             }
 
-            let result = packing.bytesPerElement === 1 ? int8(packed) : int16(packed);
+            let result = byteArray(packed);
             return {
-                encodings: [{ kind: 'IntegerPacking', byteCount: packing.bytesPerElement, isUnsigned: false, srcSize: n }, result.encodings[0]],
-                data: result.data
-            };
-        }
-
-        function integerPackingUnsigned(data: Int32Array, packing: { size: number, bytesPerElement: number }): Result {            
-            let upperLimit = packing.bytesPerElement === 1 ? 0xFF : 0xFFFF;
-            let n = data.length;
-            let packed = packing.bytesPerElement === 1 ? new Uint8Array(packing.size) : new Uint16Array(packing.size);
-            let j = 0;
-            for (let i = 0; i < n; i++) {
-                let value = data[i];
-                while (value >= upperLimit) {
-                    packed[j] = upperLimit;
-                    ++j;
-                    value -= upperLimit;
-                }
-                packed[j] = value;
-                ++j;
-            }
-            
-            let result = packing.bytesPerElement === 1 ? uint8(packed) : uint16(packed);
-            return {
-                encodings: [{ kind: 'IntegerPacking', byteCount: packing.bytesPerElement, isUnsigned: true, srcSize: n }, result.encodings[0]],
+                encodings: [{ 
+                        kind: 'IntegerPacking', 
+                        byteCount: packing.bytesPerElement, 
+                        isUnsigned: !packing.isSigned, 
+                        srcSize: n
+                    }, 
+                    result.encodings[0]
+                ],
                 data: result.data
             };
         }
@@ -377,15 +327,18 @@ namespace CIFTools.Binary {
          * Packs Int32 array. The packing level is determined automatically to either 1-, 2-, or 4-byte words.
          */
         export function integerPacking(data: Int32Array): Result {
+            if (!(data instanceof Int32Array)) {
+                throw new Error('Integer packing can only be applied to Int32 data.');
+            }
+
             let packing = determinePacking(data);
 
             if (packing.bytesPerElement === 4) {
                 // no packing done, Int32 encoding will be used
-                return int32(data);
+                return byteArray(data);
             }
 
-            if (packing.isSigned) return integerPackingSigned(data, packing);
-            return integerPackingUnsigned(data, packing);
+            return _integerPacking(data, packing);
         }
 
         export function stringArray(data: string[]): Result {

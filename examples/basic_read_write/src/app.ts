@@ -84,8 +84,6 @@ function createSampleData() {
         value[i - 1] = Math.sqrt(i);
     }
 
-    console.log(value);
-
     return <Data>{ id, signedValue, unsignedValue, token, value };
 }
 
@@ -103,7 +101,7 @@ function createMyCategoryCategory(ctx: Context) {
         { name: 'signedValue', string: (data, i) => data.signedValue[i].toString(), number: (data, i) => data.signedValue[i], typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'unsignedValue', string: (data, i) => data.unsignedValue[i].toString(), number: (data, i) => data.unsignedValue[i], typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'token', string: (data, i) => data.token[i] },
-        { name: 'valueF', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.float32) },
+        { name: 'valueF', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.byteArray) },
         { name: 'value', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.fixedPoint(1000)).and(E.delta).and(E.integerPacking) },
         { name: 'quantValue', string: (data, i) => '' + Math.round(1000 * data.value[i]) / 1000, number: (data, i) => data.value[i], typedArray: Float32Array, encoder: E.by(E.intervalQuantizaiton(0, 5, 254)).and(E.integerPacking) },
     ];
@@ -164,6 +162,11 @@ create_CIF_and_BinarCIF();
  * Read the created BinaryCIF file and write out its content.
  */
 function read_sample_BinaryCIF() {
+
+    function pad(str: string, w: number) {
+        return str + (new Array(Math.max(w - str.length + 1, 0)).join(' '));
+    } 
+
     fs.readFile('data/example.bcif', (err, buffer) => {
         if (err) {
             console.log(err);
@@ -191,13 +194,13 @@ function read_sample_BinaryCIF() {
 
         for (let cat of data.categories) {
             console.log(cat.name);
-            console.log(cat.columnNames.join('\t'));
+            console.log(cat.columnNames.map(s => pad(s, 16)).join('\t'));
             for (let i = 0; i < cat.rowCount; i++) {
                 let row = '';
                 for (let colName of cat.columnNames) {
                     // using "getString" on each value is for printing purposes only.
                     // normally, getInteger / getFloat would be preferable.
-                    row += cat.getColumn(colName).getString(i) + '\t';
+                    row += pad(cat.getColumn(colName).getString(i)!, 16) + '\t';
                 }
                 console.log(row);
             }

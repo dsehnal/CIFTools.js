@@ -24,13 +24,14 @@ namespace CIFTools.Binary {
             switch (encoding.kind) {
                 case 'ByteArray': {
                     switch (encoding.type) {
-                        case Encoding.DataType.Uint8: return data;
-                        case Encoding.DataType.Int8: return int8(data);
-                        case Encoding.DataType.Int16: return int16(data);
-                        case Encoding.DataType.Uint16: return uint16(data);
-                        case Encoding.DataType.Int32: return int32(data);
-                        case Encoding.DataType.Float32: return float32(data);
-                        case Encoding.DataType.Float64: return float64(data);
+                        case Encoding.IntDataType.Uint8: return data;
+                        case Encoding.IntDataType.Int8: return int8(data);
+                        case Encoding.IntDataType.Int16: return int16(data);
+                        case Encoding.IntDataType.Uint16: return uint16(data);
+                        case Encoding.IntDataType.Int32: return int32(data);
+                        case Encoding.IntDataType.Uint32: return uint32(data);
+                        case Encoding.FloatDataType.Float32: return float32(data);
+                        case Encoding.FloatDataType.Float64: return float64(data);
                         default: throw new Error('Unsupported ByteArray type.')
                     }
                 }
@@ -50,6 +51,7 @@ namespace CIFTools.Binary {
                 case Encoding.IntDataType.Int32: return new Int32Array(size);
                 case Encoding.IntDataType.Uint8: return new Uint8Array(size);
                 case Encoding.IntDataType.Uint16: return new Uint16Array(size);
+                case Encoding.IntDataType.Uint32: return new Uint32Array(size);
                 default: throw new Error('Unsupported integer data type.');
             }
         }
@@ -76,23 +78,25 @@ namespace CIFTools.Binary {
         function int8(data: Uint8Array) { return new Int8Array(data.buffer, data.byteOffset); }
 
         function flipByteOrder(data: Uint8Array, bytes: number) {
-            let ret = new Uint8Array(data.length);
+            let buffer = new ArrayBuffer(data.length);
+            let ret = new Uint8Array(buffer);
             for (let i = 0, n = data.length; i < n; i += bytes) {
                 for (let j = 0; j < bytes; j++) { 
                     ret[i + bytes - j - 1] = data[i + j];
                 }
             }
-            return ret;
+            return buffer;
         }
 
         function view<T>(data: Uint8Array, byteSize: number, c: new(buffer: ArrayBuffer) => T) {
             if (isLittleEndian) return new c(data.buffer);
-            return new c(flipByteOrder(data, byteSize).buffer);
+            return new c(flipByteOrder(data, byteSize));
         }
 
         function int16(data: Uint8Array) { return view(data, 2, Int16Array); }
         function uint16(data: Uint8Array) { return view(data, 2, Uint16Array); }
         function int32(data: Uint8Array) { return view(data, 4, Int32Array); }
+        function uint32(data: Uint8Array) { return view(data, 4, Uint32Array); }
         function float32(data: Uint8Array) { return view(data, 4, Float32Array); }
         function float64(data: Uint8Array) { return view(data, 8, Float64Array); }
 

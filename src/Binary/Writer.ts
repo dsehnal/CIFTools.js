@@ -40,11 +40,11 @@ namespace CIFTools.Binary {
         let maskData: EncodedData | undefined = void 0;
 
         if (!allPresent) {
-            let maskRLE = Encoder.by(Encoder.runLength).and(Encoder.int32).encode(mask);
+            let maskRLE = Encoder.by(Encoder.runLength).and(Encoder.byteArray).encode(mask);
             if (maskRLE.data.length < mask.length) {
                 maskData = maskRLE;
             } else {
-                maskData = Encoder.by(Encoder.uint8).encode(mask);
+                maskData = Encoder.by(Encoder.byteArray).encode(mask);
             }
         }
 

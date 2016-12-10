@@ -1,4 +1,4 @@
-[![License](http://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/dsehnal/CIFTools.js/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/dsehnal/CIFTools.js/blob/master/LICENSE)
 
 What is CIFTools.js
 =======

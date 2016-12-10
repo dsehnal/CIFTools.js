@@ -54,7 +54,6 @@ function createSampleData() {
         token[i - 1] = 'tok_' + i;
         value[i - 1] = Math.sqrt(i);
     }
-    console.log(value);
     return { id: id, signedValue: signedValue, unsignedValue: unsignedValue, token: token, value: value };
 }
 var E = Tools.Binary.Encoder;
@@ -64,7 +63,7 @@ function createMyCategoryCategory(ctx) {
         { name: 'signedValue', string: function (data, i) { return data.signedValue[i].toString(); }, number: function (data, i) { return data.signedValue[i]; }, typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'unsignedValue', string: function (data, i) { return data.unsignedValue[i].toString(); }, number: function (data, i) { return data.unsignedValue[i]; }, typedArray: Int32Array, encoder: E.by(E.integerPacking) },
         { name: 'token', string: function (data, i) { return data.token[i]; } },
-        { name: 'valueF', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.float32) },
+        { name: 'valueF', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.byteArray) },
         { name: 'value', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.fixedPoint(1000)).and(E.delta).and(E.integerPacking) },
         { name: 'quantValue', string: function (data, i) { return '' + Math.round(1000 * data.value[i]) / 1000; }, number: function (data, i) { return data.value[i]; }, typedArray: Float32Array, encoder: E.by(E.intervalQuantizaiton(0, 5, 254)).and(E.integerPacking) },
     ];
@@ -113,6 +112,9 @@ create_CIF_and_BinarCIF();
  * Read the created BinaryCIF file and write out its content.
  */
 function read_sample_BinaryCIF() {
+    function pad(str, w) {
+        return str + (new Array(Math.max(w - str.length + 1, 0)).join(' '));
+    }
     fs.readFile('data/example.bcif', function (err, buffer) {
         if (err) {
             console.log(err);
@@ -135,14 +137,14 @@ function read_sample_BinaryCIF() {
         for (var _i = 0, _a = data.categories; _i < _a.length; _i++) {
             var cat = _a[_i];
             console.log(cat.name);
-            console.log(cat.columnNames.join('\t'));
+            console.log(cat.columnNames.map(function (s) { return pad(s, 16); }).join('\t'));
             for (var i = 0; i < cat.rowCount; i++) {
                 var row = '';
                 for (var _b = 0, _c = cat.columnNames; _b < _c.length; _b++) {
                     var colName = _c[_b];
                     // using "getString" on each value is for printing purposes only.
                     // normally, getInteger / getFloat would be preferable.
-                    row += cat.getColumn(colName).getString(i) + '\t';
+                    row += pad(cat.getColumn(colName).getString(i), 16) + '\t';
                 }
                 console.log(row);
             }
