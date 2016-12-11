@@ -94,7 +94,7 @@ namespace CIFTools.Text {
      */
     export class DataBlock implements CIFTools.DataBlock {
 
-        private categoryMap: { [name: string]: Category };
+        private categoryMap: Map<string, Category>;
         private categoryList: Category[];
 
         /**
@@ -124,7 +124,7 @@ namespace CIFTools.Text {
          * Gets a category by its name.
          */
         getCategory(name: string) {
-            return this.categoryMap[name];
+            return this.categoryMap.get(name);
         }
 
         /**
@@ -132,7 +132,7 @@ namespace CIFTools.Text {
          */
         addCategory(category: Category) {
             this.categoryList[this.categoryList.length] = category;
-            this.categoryMap[category.name] = category;
+            this.categoryMap.set(category.name, category);
         }
 
         toJSON() {
@@ -148,7 +148,7 @@ namespace CIFTools.Text {
             this.data = data;
             this.categoryList = [];
             this.additionalData = {};
-            this.categoryMap = {};
+            this.categoryMap = new Map<string, Category>();
         }
     }
 
@@ -157,7 +157,7 @@ namespace CIFTools.Text {
      */
     export class Category implements CIFTools.Category {
         private data: string;
-        private columnWrappers: { [name: string]: Column };
+        private columnIndices: Map<string, number>;
         private columnNameList: string[];
 
         /**
@@ -203,7 +203,9 @@ namespace CIFTools.Text {
          * @returns undefined if the column isn't present, the Column object otherwise.
          */
         getColumn(name: string): CIFTools.Column {
-            return <CIFTools.Column>this.columnWrappers[name] || CIFTools.UndefinedColumn;
+            let i = this.columnIndices.get(name);
+            if (i !== void 0) return new Column(this, this.data, name, i);
+            return CIFTools.UndefinedColumn;
         }
 
         constructor(
@@ -220,12 +222,11 @@ namespace CIFTools.Text {
             this.columnCount = columns.length;
             this.rowCount = (tokenCount / columns.length) | 0;
 
-            this.columnWrappers = {};
+            this.columnIndices = new Map<string, number>();
             this.columnNameList = [];
             for (let i = 0; i < columns.length; i++) {
                 let colName = columns[i].substr(name.length + 1);
-                let col = new Column(this, data, colName, i);
-                this.columnWrappers[colName] = col;
+                this.columnIndices.set(colName, i);
                 this.columnNameList.push(colName);
             }
         }

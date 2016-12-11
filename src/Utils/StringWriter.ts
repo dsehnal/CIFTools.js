@@ -44,7 +44,6 @@ namespace CIFTools.Utils {
         }
 
         export function writeTo(writer: StringWriter, stream: OutputStream) {
-
             finalize(writer);
 
             for (let s of writer.data) {

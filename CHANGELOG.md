@@ -3,6 +3,7 @@
 * Added unsigned integer packing.
 * Endiannes is now always little-endian.
 * Fixed int16/32 decoding.
+* Columns are no longer cached and always created on demand. This should improve memory consumption, especially for BinaryCIF.
 
 # 1.0.3
 * Handle # in strings in text CIF writer.

@@ -31,14 +31,14 @@ function read_mmCIF(filename: string) {
         let data = parsed.result.dataBlocks[0];
 
         // get the _entry.id value:
-        console.log('ID:', data.getCategory('_entry').getColumn('id').getString(0));
+        console.log('ID:', data.getCategory('_entry')!.getColumn('id').getString(0));
 
         // write out the categories
         console.log('Categories', data.categories.length);
         console.log(data.categories.map(c => c.name).join(', '));
 
         // get the atom site category and output the number of rows
-        let atom_site = data.getCategory('_atom_site');
+        let atom_site = data.getCategory('_atom_site')!;
         console.log(atom_site.rowCount, 'atoms');
 
         // sum all values in the _atom_site.Cartn_x column.

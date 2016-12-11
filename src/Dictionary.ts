@@ -28,7 +28,7 @@ namespace CIFTools {
         header: string;
         categories: Category[];
         additionalData: { [name: string]: any };
-        getCategory(name: string): Category;
+        getCategory(name: string): Category | undefined;
         toJSON(): any;
     }
 
@@ -52,6 +52,10 @@ namespace CIFTools {
          * Columns are accessed by their field name only, i.e.
          * _category.field is accessed by
          * category.getColumn('field')
+         * 
+         * Note that column are created on demand and there is some computational
+         * cost when creating a new column. Therefore, if you need to reuse a column,
+         * it is a good idea to cache it.
          */
         getColumn(name: string): Column;
 

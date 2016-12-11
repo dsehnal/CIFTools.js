@@ -19,13 +19,13 @@ namespace CIFTools.Binary {
     }
 
     export class DataBlock implements CIFTools.DataBlock {
-        private categoryMap: { [name: string]: Category };
+        private categoryMap: Map<string, Category>;
         private categoryList: Category[];
 
         header: string;
         additionalData: { [name: string]: any } = {}
         get categories() { return this.categoryList; }
-        getCategory(name: string) { return this.categoryMap[name]; }
+        getCategory(name: string) { return this.categoryMap.get(name); }
 
         toJSON() {
             return {
@@ -38,16 +38,15 @@ namespace CIFTools.Binary {
         constructor(data: EncodedDataBlock) {
             this.header = data.header;
             this.categoryList = data.categories.map(c => new Category(c));
-            this.categoryMap = {};
+            this.categoryMap = new Map<string, Category>();
             for (let c of this.categoryList) {
-                this.categoryMap[c.name] = c;
+                this.categoryMap.set(c.name, c);
             }
         }
     }
 
     export class Category implements CIFTools.Category {
-        private encodedColumns: { [name: string]: EncodedColumn };
-        private columnWrappers: { [name: string]: Column | null };
+        private encodedColumns: Map<string, EncodedColumn>;
         private columnNameList: string[];
 
         name: string;
@@ -57,14 +56,8 @@ namespace CIFTools.Binary {
         get columnNames() { return this.columnNameList; }
 
         getColumn(name: string): CIFTools.Column {
-            let c = this.columnWrappers[name];
-            if (c) return c;
-            let w = this.encodedColumns[name];
-            if (w) {
-                c = wrapColumn(w);
-                this.columnWrappers[name] = c;
-                return c;
-            }
+            let w = this.encodedColumns.get(name);
+            if (w) return wrapColumn(w);
             return CIFTools.UndefinedColumn;
         }
 
@@ -90,12 +83,10 @@ namespace CIFTools.Binary {
             this.columnCount = data.columns.length;
             this.rowCount = data.rowCount;
             this.columnNameList = [];
-            this.encodedColumns = {};
-            this.columnWrappers = {};
+            this.encodedColumns = new Map<string, EncodedColumn>();
 
             for (let c of data.columns) {
-                this.encodedColumns[c.name] = c;
-                this.columnWrappers[c.name] = null;
+                this.encodedColumns.set(c.name, c);
                 this.columnNameList.push(c.name);
             }
         }
