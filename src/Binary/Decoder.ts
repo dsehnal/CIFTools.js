@@ -58,7 +58,7 @@ namespace CIFTools.Binary {
 
         function getFloatArray(type: Encoding.FloatDataType, size: number) {
             switch (type) {
-                case Encoding.FloatDataType.Float32: return new Float64Array(size);
+                case Encoding.FloatDataType.Float32: return new Float32Array(size);
                 case Encoding.FloatDataType.Float64: return new Float64Array(size);
                 default: throw new Error('Unsupported floating data type.');
             }

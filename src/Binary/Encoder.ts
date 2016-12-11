@@ -141,7 +141,7 @@ namespace CIFTools.Binary {
             let output = new Int32Array(data.length);
             for (let i = 0, n = data.length; i < n; i++) {
                 let v = data[i];
-                if (v <= 0) output[i] = 0;
+                if (v <= min) output[i] = 0;
                 else if (v >= max) output[i] = numSteps;
                 else output[i] = (Math.round((v - min) / delta)) | 0;
             }
