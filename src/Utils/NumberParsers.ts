@@ -27,7 +27,9 @@ namespace CIFTools.Utils.FastNumberParsers {
         return neg * ret;
     }
 
-    export function parseScientific(main: number, str: string, start: number, end: number) {
+    function parseScientific(main: number, str: string, start: number, end: number) {
+        // handle + in '1e+1' separately.
+        if (str.charCodeAt(start) === 43 /* + */) start++;
         return main * Math.pow(10.0, parseInt(str, start, end));
     }
 

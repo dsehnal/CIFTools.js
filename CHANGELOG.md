@@ -1,3 +1,6 @@
+# 1.1.1
+* Handle + in scientific notation (1e+10).
+
 # 1.1.0
 * Added QuantizeInterval encoding.
 * Added unsigned integer packing.
