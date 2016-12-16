@@ -121,7 +121,7 @@ namespace CIFTools.Binary {
         }
         export function fixedPoint(factor: number): Provider { return data => _fixedPoint(data, factor); }
         
-        function _intervalQuantizaiton(data: Encoding.FloatArray, min: number, max: number, numSteps: number): Result {
+        function _intervalQuantizaiton(data: Encoding.FloatArray, min: number, max: number, numSteps: number, arrayType: new(size: number) => Encoding.IntArray): Result {
             let srcType = Encoding.getDataType(data) as Encoding.FloatDataType;
             if (!data.length) {
                 return {
@@ -138,7 +138,7 @@ namespace CIFTools.Binary {
 
             let delta = (max - min) / (numSteps - 1);
 
-            let output = new Int32Array(data.length);
+            let output = new arrayType(data.length);
             for (let i = 0, n = data.length; i < n; i++) {
                 let v = data[i];
                 if (v <= min) output[i] = 0;
@@ -151,7 +151,9 @@ namespace CIFTools.Binary {
                 data: output
             };
         }
-        export function intervalQuantizaiton(min: number, max: number, numSteps: number): Provider  { return data => _intervalQuantizaiton(data, min, max, numSteps); }
+        export function intervalQuantizaiton(min: number, max: number, numSteps: number, arrayType: new(size: number) => Encoding.IntArray = Int32Array): Provider  { 
+            return data => _intervalQuantizaiton(data, min, max, numSteps, arrayType); 
+        }
 
         export function runLength(data: Encoding.IntArray): Result {
             let srcType = Encoding.getDataType(data) as Encoding.IntDataType;

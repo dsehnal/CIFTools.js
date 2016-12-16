@@ -3,7 +3,7 @@
  */
 var CIFTools;
 (function (CIFTools) {
-    CIFTools.VERSION = { number: "1.1.1", date: "Dec 14 2016" };
+    CIFTools.VERSION = { number: "1.1.2", date: "Dec 16 2016" };
 })(CIFTools || (CIFTools = {}));
 /*
  * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
@@ -2631,7 +2631,7 @@ var CIFTools;
             }
             function fixedPoint(factor) { return function (data) { return _fixedPoint(data, factor); }; }
             Encoder.fixedPoint = fixedPoint;
-            function _intervalQuantizaiton(data, min, max, numSteps) {
+            function _intervalQuantizaiton(data, min, max, numSteps, arrayType) {
                 var srcType = Binary.Encoding.getDataType(data);
                 if (!data.length) {
                     return {
@@ -2645,7 +2645,7 @@ var CIFTools;
                     max = t;
                 }
                 var delta = (max - min) / (numSteps - 1);
-                var output = new Int32Array(data.length);
+                var output = new arrayType(data.length);
                 for (var i = 0, n = data.length; i < n; i++) {
                     var v = data[i];
                     if (v <= min)
@@ -2660,7 +2660,10 @@ var CIFTools;
                     data: output
                 };
             }
-            function intervalQuantizaiton(min, max, numSteps) { return function (data) { return _intervalQuantizaiton(data, min, max, numSteps); }; }
+            function intervalQuantizaiton(min, max, numSteps, arrayType) {
+                if (arrayType === void 0) { arrayType = Int32Array; }
+                return function (data) { return _intervalQuantizaiton(data, min, max, numSteps, arrayType); };
+            }
             Encoder.intervalQuantizaiton = intervalQuantizaiton;
             function runLength(data) {
                 var srcType = Binary.Encoding.getDataType(data);
