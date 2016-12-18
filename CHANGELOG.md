@@ -1,3 +1,6 @@
+# 1.1.3
+* Better UTF8 read.
+
 # 1.1.2
 * Updated QuantizeInterval encoding.
 

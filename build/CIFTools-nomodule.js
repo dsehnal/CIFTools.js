@@ -3,7 +3,7 @@
  */
 var CIFTools;
 (function (CIFTools) {
-    CIFTools.VERSION = { number: "1.1.2", date: "Dec 16 2016" };
+    CIFTools.VERSION = { number: "1.1.3", date: "Dec 18 2016" };
 })(CIFTools || (CIFTools = {}));
 /*
  * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
@@ -1536,6 +1536,10 @@ var CIFTools;
     (function (Binary) {
         var MessagePack;
         (function (MessagePack) {
+            /*
+             * Adapted from https://github.com/rcsb/mmtf-javascript
+             * by Alexander Rose <alexander.rose@weirdbyte.de>, MIT License, Copyright (c) 2016
+             */
             /**
              * decode all key-value pairs of a map into an object
              * @param  {Integer} length - number of key-value pairs
@@ -2085,37 +2089,47 @@ var CIFTools;
                 }
             }
             MessagePack.utf8Write = utf8Write;
+            var __chars = function () {
+                var data = [];
+                for (var i = 0; i < 1024; i++)
+                    data[i] = String.fromCharCode(i);
+                return data;
+            }();
+            function throwError(err) {
+                throw new Error(err);
+            }
             function utf8Read(data, offset, length) {
-                var str = [];
+                var chars = __chars;
+                var str = [], chunk = [], chunkSize = 5, chunkOffset = 0;
                 for (var i = offset, end = offset + length; i < end; i++) {
                     var byte = data[i];
                     // One byte character
                     if ((byte & 0x80) === 0x00) {
-                        str[str.length] = String.fromCharCode(byte);
-                        continue;
+                        chunk[chunkOffset++] = chars[byte];
                     }
-                    // Two byte character
-                    if ((byte & 0xe0) === 0xc0) {
-                        str[str.length] = String.fromCharCode(((byte & 0x0f) << 6) |
-                            (data[++i] & 0x3f));
-                        continue;
+                    else if ((byte & 0xe0) === 0xc0) {
+                        chunk[chunkOffset++] = chars[((byte & 0x0f) << 6) | (data[++i] & 0x3f)];
                     }
-                    // Three byte character
-                    if ((byte & 0xf0) === 0xe0) {
-                        str[str.length] = String.fromCharCode(((byte & 0x0f) << 12) |
+                    else if ((byte & 0xf0) === 0xe0) {
+                        chunk[chunkOffset++] = String.fromCharCode(((byte & 0x0f) << 12) |
                             ((data[++i] & 0x3f) << 6) |
                             ((data[++i] & 0x3f) << 0));
-                        continue;
                     }
-                    // Four byte character
-                    if ((byte & 0xf8) === 0xf0) {
-                        str[str.length] = String.fromCharCode(((byte & 0x07) << 18) |
+                    else if ((byte & 0xf8) === 0xf0) {
+                        chunk[chunkOffset++] = String.fromCharCode(((byte & 0x07) << 18) |
                             ((data[++i] & 0x3f) << 12) |
                             ((data[++i] & 0x3f) << 6) |
                             ((data[++i] & 0x3f) << 0));
-                        continue;
                     }
-                    throw new Error("Invalid byte " + byte.toString(16));
+                    else
+                        throwError("Invalid byte " + byte.toString(16));
+                    if (chunkOffset === chunkSize) {
+                        str[str.length] = chunk.join('');
+                        chunkOffset = 0;
+                    }
+                }
+                if (chunkOffset > 0) {
+                    str[str.length] = chunk.slice(0, chunkOffset).join('');
                 }
                 return str.join('');
             }
@@ -2140,7 +2154,7 @@ var CIFTools;
                         count += 4;
                         continue;
                     }
-                    throw new Error("bad codepoint " + codePoint);
+                    throwError("bad codepoint " + codePoint);
                 }
                 return count;
             }
@@ -2564,7 +2578,6 @@ var CIFTools;
             return Encoder;
         }());
         Binary.Encoder = Encoder;
-        var Encoder;
         (function (Encoder) {
             function by(f) {
                 return new Encoder([f]);
@@ -2589,8 +2602,7 @@ var CIFTools;
                 _a[6 /* Uint32 */] = function (v, i, a) { v.setUint32(4 * i, a, true); },
                 _a[32 /* Float32 */] = function (v, i, a) { v.setFloat32(4 * i, a, true); },
                 _a[33 /* Float64 */] = function (v, i, a) { v.setFloat64(8 * i, a, true); },
-                _a
-            );
+                _a);
             var byteSizes = (_b = {},
                 _b[2 /* Int16 */] = 2,
                 _b[5 /* Uint16 */] = 2,
@@ -2598,8 +2610,7 @@ var CIFTools;
                 _b[6 /* Uint32 */] = 4,
                 _b[32 /* Float32 */] = 4,
                 _b[33 /* Float64 */] = 8,
-                _b
-            );
+                _b);
             function byteArray(data) {
                 var type = Binary.Encoding.getDataType(data);
                 if (type === 1 /* Int8 */)

@@ -1,5 +1,5 @@
 "use strict";
-var fs = require('fs');
+var fs = require("fs");
 var Tools = require('../../../build/CIFTools');
 // if CIFTools.js is present in node_modules it is possible to use
 // import * as Tools from 'CIFTools'
