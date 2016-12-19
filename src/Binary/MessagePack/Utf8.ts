@@ -59,7 +59,7 @@ namespace CIFTools.Binary.MessagePack {
 
     export function utf8Read(data: Uint8Array, offset: number, length: number) {
         let chars = __chars;
-        let str: string[] = [], chunk: string[] = [], chunkSize = 5, chunkOffset = 0;
+        let str: string[] | undefined = void 0, chunk: string[] = [], chunkSize = 512, chunkOffset = 0;
 
         for (let i = offset, end = offset + length; i < end; i++) {
             let byte = data[i];
@@ -90,10 +90,12 @@ namespace CIFTools.Binary.MessagePack {
             } else throwError("Invalid byte " + byte.toString(16));
 
             if (chunkOffset === chunkSize) {
+                str = str || [];
                 str[str.length] = chunk.join('');
                 chunkOffset = 0;
             }
         }
+        if (!str) return chunk.slice(0, chunkOffset).join('');
         if (chunkOffset > 0) {
             str[str.length] = chunk.slice(0, chunkOffset).join('');
         }
