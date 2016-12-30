@@ -1,9 +1,9 @@
 "use strict";
 var fs = require("fs");
-var Tools = require('../../../build/CIFTools');
+var _1 = require("../../../");
 // if CIFTools.js is present in node_modules it is possible to use
-// import * as Tools from 'CIFTools'
-console.log('Version: ', Tools.VERSION);
+// import CIFTools from 'CIFTools'
+console.log('Version: ', _1.default.VERSION);
 /**
  * Reading CIF files.
  */
@@ -14,7 +14,7 @@ function read_mmCIF(filename) {
             console.log(err);
             return;
         }
-        var parsed = Tools.Text.parse(input);
+        var parsed = _1.default.Text.parse(input);
         // check if the parsing result in an error
         if (parsed.isError) {
             console.log(parsed.toString());
@@ -56,7 +56,7 @@ function createSampleData() {
     }
     return { id: id, signedValue: signedValue, unsignedValue: unsignedValue, token: token, value: value };
 }
-var E = Tools.Binary.Encoder;
+var E = _1.default.Binary.Encoder;
 function createMyCategoryCategory(ctx) {
     var fields = [
         { name: 'id', string: function (data, i) { return data.id[i].toString(); }, number: function (data, i) { return data.id[i]; }, typedArray: Int32Array, encoder: E.by(E.delta).and(E.runLength).and(E.integerPacking) },
@@ -89,8 +89,8 @@ function createFileAndWriter(filename) {
 function create_CIF_and_BinarCIF() {
     var data = createSampleData();
     var ctx = { data: data };
-    var textWriter = new Tools.Text.Writer();
-    var binaryWriter = new Tools.Binary.Writer('Example Writer');
+    var textWriter = new _1.default.Text.Writer();
+    var binaryWriter = new _1.default.Binary.Writer('Example Writer');
     textWriter.startDataBlock('Example');
     binaryWriter.startDataBlock('Example');
     textWriter.writeCategory(createMyCategoryCategory, [ctx]);
@@ -124,7 +124,7 @@ function read_sample_BinaryCIF() {
         for (var i = 0, n = buffer.length; i < n; i++) {
             input[i] = buffer[i];
         }
-        var parsed = Tools.Binary.parse(input.buffer);
+        var parsed = _1.default.Binary.parse(input.buffer);
         // check if the parsing result in an error
         if (parsed.isError) {
             console.log(parsed.toString());

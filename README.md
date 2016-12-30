@@ -31,7 +31,7 @@ In browser, include the library:
 In Node.js:
 
 ```JavaScript
-var CIFTools = require('./CIFTools'); // or just 'CIFTools' if you place it in the /node_modules directory. 
+var CIFTools = require('./lib/CIFTools.js/'); // or just 'CIFTools' if you place it in the /node_modules directory. 
 ```
 
 To parse text CIF, use:

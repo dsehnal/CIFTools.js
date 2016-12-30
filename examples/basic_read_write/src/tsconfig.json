@@ -16,7 +16,6 @@
     "outDir": "../build"
   },
   "files": [
-    "../../../build/CIFTools.d.ts",
     "./typings/node.d.ts",
     "./app.ts"
   ]

@@ -1,10 +1,10 @@
 
 import * as fs from 'fs'
-const Tools = require('../../../build/CIFTools') as (typeof CIFTools);
+import CIFTools from '../../../'
 // if CIFTools.js is present in node_modules it is possible to use
-// import * as Tools from 'CIFTools'
+// import CIFTools from 'CIFTools'
 
-console.log('Version: ', Tools.VERSION);
+console.log('Version: ', CIFTools.VERSION);
 
 /**
  * Reading CIF files.
@@ -19,7 +19,7 @@ function read_mmCIF(filename: string) {
             return;
         }
 
-        let parsed = Tools.Text.parse(input);
+        let parsed = CIFTools.Text.parse(input);
 
         // check if the parsing result in an error
         if (parsed.isError) {
@@ -91,7 +91,7 @@ interface Context {
     data: Data
 }
 
-const E = Tools.Binary.Encoder
+const E = CIFTools.Binary.Encoder
 
 function createMyCategoryCategory(ctx: Context) {
     type T = typeof ctx.data;
@@ -131,8 +131,8 @@ function create_CIF_and_BinarCIF() {
     let data = createSampleData();
     let ctx = <Context>{ data };
 
-    let textWriter = new Tools.Text.Writer();
-    let binaryWriter = new Tools.Binary.Writer('Example Writer');
+    let textWriter = new CIFTools.Text.Writer();
+    let binaryWriter = new CIFTools.Binary.Writer('Example Writer');
 
     textWriter.startDataBlock('Example');
     binaryWriter.startDataBlock('Example');
@@ -178,7 +178,7 @@ function read_sample_BinaryCIF() {
             input[i] = buffer[i];
         }
 
-        let parsed = Tools.Binary.parse(input.buffer);
+        let parsed = CIFTools.Binary.parse(input.buffer);
 
         // check if the parsing result in an error
         if (parsed.isError) {
