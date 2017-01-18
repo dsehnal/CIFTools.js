@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
+ * Copyright (c) 2016 - now David Sehnal, licensed under MIT License, See LICENSE file for more info.
  */
 
 namespace CIFTools.Binary {
@@ -344,7 +344,7 @@ namespace CIFTools.Binary {
         }
 
         export function stringArray(data: string[]): Result {
-            let map = new Map<string, number>();
+            let map: any = Object.create(null);
             let strings: string[] = [];
             let accLength = 0;
             let offsets = Utils.ChunkedArray.create<number>(s => new Int32Array(s), 1024, 1);
@@ -359,7 +359,7 @@ namespace CIFTools.Binary {
                     continue;
                 }
 
-                let index = map.get(s);
+                let index = map[s];
                 if (index === void 0) {
                     // increment the length
                     accLength += s.length;
@@ -367,7 +367,7 @@ namespace CIFTools.Binary {
                     // store the string and index                   
                     index = strings.length;
                     strings[index] = s;
-                    map.set(s, index);
+                    map[s] = index;
 
                     // write the offset
                     Utils.ChunkedArray.add(offsets, accLength);

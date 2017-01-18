@@ -1,3 +1,6 @@
+# 1.1.4
+* Replaced ES6 map with Object.create(null) because Map.get was getting deoptimized for some reason.
+
 # 1.1.3
 * Better UTF8 read.
 

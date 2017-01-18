@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
+ * Copyright (c) 2016 - now David Sehnal, licensed under MIT License, See LICENSE file for more info.
  */
 
 /*
@@ -46,14 +46,14 @@ namespace CIFTools.Text {
     /**
      * This ensures there is only 1 instance of a short string.
      */
-    type ShortStringPool = Map<string, string>
+    type ShortStringPool = { [key: string]: string }
     namespace ShortStringPool {
-        export function create(): ShortStringPool { return new Map<string, string>(); }
+        export function create(): ShortStringPool { return Object.create(null); }
         export function get(pool: ShortStringPool, str: string) {
             if (str.length > 6) return str;
-            var value = pool.get(str);
+            var value = pool[str];
             if (value !== void 0) return value;
-            pool.set(str, str);
+            pool[str] = str;
             return str;
         }
     }

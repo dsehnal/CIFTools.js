@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
+ * Copyright (c) 2016 - now David Sehnal, licensed under MIT License, See LICENSE file for more info.
  */
 
 namespace CIFTools.Binary {
@@ -196,7 +196,7 @@ namespace CIFTools.Binary {
             let str = encoding.stringData;
             let offsets = decode({ encoding: encoding.offsetEncoding, data: encoding.offsets });
             let indices = decode({ encoding: encoding.dataEncoding, data });
-            let cache = new Map<number, string>();
+            let cache: any = Object.create(null);
             let result = new Array(indices.length);
             let offset = 0;
             for (let i of indices) {
@@ -204,10 +204,10 @@ namespace CIFTools.Binary {
                     result[offset++] = null;
                     continue;
                 }
-                let v = cache.get(i);
+                let v = cache[i];
                 if (v === void 0) {
                     v = str.substring(offsets[i], offsets[i + 1]);
-                    cache.set(i, v);
+                    cache[i] = v;
                 }
                 result[offset++] = v;
             }

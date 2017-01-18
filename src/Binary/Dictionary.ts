@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 David Sehnal, licensed under MIT License, See LICENSE file for more info.
+ * Copyright (c) 2016 - now David Sehnal, licensed under MIT License, See LICENSE file for more info.
  */
 
 namespace CIFTools.Binary {
