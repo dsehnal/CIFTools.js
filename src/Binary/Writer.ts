@@ -13,17 +13,17 @@ namespace CIFTools.Binary {
             isNative = true;
             array = new Array(totalCount);
         }
-        let mask = new Uint8Array(totalCount);
-        let presence = field.presence;
-        let getter = field.number ? field.number : field.string;
+        const mask = new Uint8Array(totalCount);
+        const presence = field.presence;
+        const getter = field.number ? field.number : field.string;
         let allPresent = true;
 
         let offset = 0;
-        for (let _d of data) {
-            let d = _d.data;
+        for (const _d of data) {
+            const d = _d.data;
             for (let i = 0, _b = _d.count; i < _b; i++) {
-                let p: ValuePresence;
-                if (presence && (p = presence(d, i)) !== ValuePresence.Present) {
+                const p = presence ? presence(data, 0) : ValuePresence.Present;
+                if (p !== ValuePresence.Present) {
                     mask[offset] = p;
                     if (isNative) array[offset] = null;
                     allPresent = false;
@@ -34,13 +34,13 @@ namespace CIFTools.Binary {
                 offset++;
             }
         }
-        let encoder = field.encoder ? field.encoder : Encoder.by(Encoder.stringArray);
-        let encoded = encoder.encode(array);
+        const encoder = field.encoder ? field.encoder : Encoder.by(Encoder.stringArray);
+        const encoded = encoder.encode(array);
 
         let maskData: EncodedData | undefined = void 0;
 
         if (!allPresent) {
-            let maskRLE = Encoder.by(Encoder.runLength).and(Encoder.byteArray).encode(mask);
+            const maskRLE = Encoder.by(Encoder.runLength).and(Encoder.byteArray).encode(mask);
             if (maskRLE.data.length < mask.length) {
                 maskData = maskRLE;
             } else {
@@ -76,16 +76,16 @@ namespace CIFTools.Binary {
                 throw new Error('No data block created.');
             }
 
-            let src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
-            let categories = src.filter(c => c && c.count > 0) as CategoryInstance<any>[];
+            const src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
+            const categories = src.filter(c => c && c.count > 0) as CategoryInstance<any>[];
             if (!categories.length) return;
-            let count = categories.reduce((a, c) => a + c!.count, 0);
+            const count = categories.reduce((a, c) => a + c!.count, 0);
             if (!count) return;
 
-            let first = categories[0]!;
-            let cat: EncodedCategory = { name: first.desc.name, columns: [], rowCount: count };
-            let data = categories.map(c => ({ data: c.data, count: c.count }));
-            for (let f of first.desc.fields) {
+            const first = categories[0]!;
+            const cat: EncodedCategory = { name: first.desc.name, columns: [], rowCount: count };
+            const data = categories.map(c => ({ data: c.data, count: c.count }));
+            for (const f of first.desc.fields) {
                 cat.columns.push(encodeField(f, data, count));
             }
             this.dataBlocks[this.dataBlocks.length - 1].categories.push(cat);

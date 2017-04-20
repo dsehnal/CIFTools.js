@@ -26,10 +26,10 @@ namespace CIFTools.Text {
                 throw new Error('No data block created.');
             }
 
-            let src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
-            let data = src.filter(c => c && c.count > 0) as CategoryInstance<any>[];
+            const src = !contexts || !contexts.length ? [category(<any>void 0)] : contexts.map(c => category(c));
+            const data = src.filter(c => c && c.count > 0) as CategoryInstance<any>[];
             if (!data.length) return;
-            let count = data.reduce((a, c) => a + (c.count === void 0 ? 1 : c.count), 0);
+            const count = data.reduce((a, c) => a + (c.count === void 0 ? 1 : c.count), 0);
             if (!count) return;
 
             else if (count === 1) {
@@ -56,20 +56,20 @@ namespace CIFTools.Text {
     }
 
     function writeCifSingleRecord(category: CategoryInstance<any>, writer: StringWriter) {
-        let fields = category.desc.fields;
-        let data = category.data;
-        let width = fields.reduce((w, s) => Math.max(w, s.name.length), 0) + category.desc.name.length + 5;
+        const fields = category.desc.fields;
+        const data = category.data;
+        const width = fields.reduce((w, s) => Math.max(w, s.name.length), 0) + category.desc.name.length + 5;
 
-        for (let f of fields) {
+        for (const f of fields) {
             StringWriter.writePadRight(writer, `${category.desc.name}.${f.name}`, width);
 
-            let presence = f.presence;
-            let p: ValuePresence;
-            if (presence && (p = presence(data, 0)) !== ValuePresence.Present) {
+            const presence = f.presence;
+            const p = presence ? presence(data, 0) : ValuePresence.Present;
+            if (p !== ValuePresence.Present) {
                 if (p === ValuePresence.NotSpecified) writeNotSpecified(writer);
                 else writeUnknown(writer);
             } else {
-                let val = f.string!(data, 0) !;
+                const val = f.string!(data, 0) !;
                 if (isMultiline(val)) {
                     writeMultiline(writer, val);
                     StringWriter.newline(writer);
@@ -85,25 +85,24 @@ namespace CIFTools.Text {
     function writeCifLoop(categories: CategoryInstance<any>[], writer: StringWriter) {
         writeLine(writer, 'loop_');
 
-        let first = categories[0];
-        let fields = first.desc.fields;
-        for (let f of fields) {
+        const first = categories[0];
+        const fields = first.desc.fields;
+        for (const f of fields) {
             writeLine(writer, `${first.desc.name}.${f.name}`);
         }
 
-        for (let category of categories) {
-            let data = category.data;
-            let count = category.count;
+        for (const category of categories) {
+            const data = category.data;
+            const count = category.count;
             for (let i = 0; i < count; i++) {
-                for (let f of fields) {
-
-                    let presence = f.presence;
-                    let p: ValuePresence;
-                    if (presence && (p = presence(data, i)) !== ValuePresence.Present) {
+                for (const f of fields) {
+                    const presence = f.presence;
+                    const p = presence ? presence(data, i) : ValuePresence.Present;
+                    if (p !== ValuePresence.Present) {
                         if (p === ValuePresence.NotSpecified) writeNotSpecified(writer);
                         else writeUnknown(writer);
                     } else {
-                        let val = f.string!(data, i) !;
+                        const val = f.string!(data, i) !;
                         if (isMultiline(val)) {
                             writeMultiline(writer, val);
                             StringWriter.newline(writer);
@@ -160,7 +159,7 @@ namespace CIFTools.Text {
         let hasSingle = false;
         let hasDouble = false;
         for (let i = 0, _l = val.length - 1; i < _l; i++) {
-            let c = val.charCodeAt(i);
+            const c = val.charCodeAt(i);
 
             switch (c) {
                 case 9: hasWhitespace = true; break; // \t
@@ -196,7 +195,7 @@ namespace CIFTools.Text {
             }
         }
 
-        let fst = val.charCodeAt(0);
+        const fst = val.charCodeAt(0);
         if (!escape && (fst === 35 /* # */ || fst === 59 /* ; */ || hasWhitespace)) {
             escapeCharStart = '\'';
             escapeCharEnd = '\' ';
@@ -219,7 +218,7 @@ namespace CIFTools.Text {
     function writeToken(writer: StringWriter, data: string, start: number, end: number) {
         let escape = false, escapeCharStart = '\'', escapeCharEnd = '\' ';
         for (let i = start; i < end - 1; i++) {
-            let c = data.charCodeAt(i);
+            const c = data.charCodeAt(i);
 
             switch (c) {
                 case 10: // \n

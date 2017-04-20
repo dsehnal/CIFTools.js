@@ -1,3 +1,6 @@
+# 1.1.5
+* Updated writer functions for CIF and BinaryCIF data.
+
 # 1.1.4
 * Replaced ES6 map with Object.create(null) because Map.get was getting deoptimized for some reason.
 

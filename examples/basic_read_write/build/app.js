@@ -1,6 +1,7 @@
 "use strict";
-var fs = require('fs');
-var _1 = require('../../../');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs");
+var _1 = require("../../../");
 // if CIFTools.js is present in node_modules it is possible to use
 // import CIFTools from 'CIFTools'
 console.log('Version: ', _1.default.VERSION);
