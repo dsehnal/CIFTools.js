@@ -22,7 +22,7 @@ namespace CIFTools.Binary {
         for (const _d of data) {
             const d = _d.data;
             for (let i = 0, _b = _d.count; i < _b; i++) {
-                const p = presence ? presence(data, i) : ValuePresence.Present;
+                const p = presence ? presence(d, i) : ValuePresence.Present;
                 if (p !== ValuePresence.Present) {
                     mask[offset] = p;
                     if (isNative) array[offset] = null;
