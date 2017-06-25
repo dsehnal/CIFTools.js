@@ -3,5 +3,5 @@
  */
 
 namespace CIFTools {
-    export var VERSION = { number: "1.1.5", date: "April 20 2017" };
+    export var VERSION = { number: "1.1.6", date: "June 26 2017" };
 } 

@@ -1,3 +1,6 @@
+# 1.1.6
+* Fixed a bug in BinaryCIF integer packing encoding.
+
 # 1.1.5
 * Updated writer functions for CIF and BinaryCIF data.
 

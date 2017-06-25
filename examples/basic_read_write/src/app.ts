@@ -58,7 +58,6 @@ read_mmCIF('data/1cbs.cif');
  * Writing CIF files.
  */
 
-
 interface Data {
     id: Int32Array,
     signedValue: Int32Array,

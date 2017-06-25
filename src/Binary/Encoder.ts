@@ -241,12 +241,12 @@ namespace CIFTools.Binary {
                 let value = data[i];
                 if (value === 0) {
                     size += 1;
-                } else if (value === upperLimit || value === lowerLimit) {
-                    size += 2;
                 } else if (value > 0) {
                     size += Math.ceil(value / upperLimit);
+                    if (value % upperLimit === 0) size += 1;
                 } else {
                     size += Math.ceil(value / lowerLimit);
+                    if (value % lowerLimit === 0) size += 1;
                 }
             }
             return size;
