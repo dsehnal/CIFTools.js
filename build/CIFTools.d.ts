@@ -136,7 +136,7 @@ declare namespace CIFTools {
     const enum ValuePresence {
         Present = 0,
         NotSpecified = 1,
-        Unknown = 2,
+        Unknown = 2
     }
     /**
      * A columns represents a single field of a CIF category.
@@ -550,11 +550,11 @@ declare namespace CIFTools.Binary {
             Int32 = 3,
             Uint8 = 4,
             Uint16 = 5,
-            Uint32 = 6,
+            Uint32 = 6
         }
         const enum FloatDataType {
             Float32 = 32,
-            Float64 = 33,
+            Float64 = 33
         }
         type DataType = IntDataType | FloatDataType;
         type IntArray = Int8Array | Int16Array | Int32Array | Uint8Array | Uint16Array | Uint32Array;

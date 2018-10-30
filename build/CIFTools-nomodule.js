@@ -3,7 +3,7 @@
  */
 var CIFTools;
 (function (CIFTools) {
-    CIFTools.VERSION = { number: "1.1.6", date: "June 26 2017" };
+    CIFTools.VERSION = { number: "1.1.7", date: "Oct 30 2018" };
 })(CIFTools || (CIFTools = {}));
 /*
  * Copyright (c) 2016 - now David Sehnal, licensed under MIT License, See LICENSE file for more info.
@@ -210,7 +210,7 @@ var CIFTools;
                         ret = ret * 10 + c;
                         ++start;
                     }
-                    else if (c === -2) {
+                    else if (c === -2) { // .
                         ++start;
                         while (start < end) {
                             c = str.charCodeAt(start) - 48;
@@ -219,7 +219,7 @@ var CIFTools;
                                 div = 10.0 * div;
                                 ++start;
                             }
-                            else if (c === 53 || c === 21) {
+                            else if (c === 53 || c === 21) { // 'e'/'E'
                                 return parseScientific(neg * (ret + point / div), str, start + 1, end);
                             }
                             else {
@@ -228,7 +228,7 @@ var CIFTools;
                         }
                         return neg * (ret + point / div);
                     }
-                    else if (c === 53 || c === 21) {
+                    else if (c === 53 || c === 21) { // 'e'/'E'
                         return parseScientific(neg * ret, str, start + 1, end);
                     }
                     else
@@ -398,7 +398,7 @@ var CIFTools;
     /**
      * Represents a column that is not present.
      */
-    var _UndefinedColumn = (function () {
+    var _UndefinedColumn = /** @class */ (function () {
         function _UndefinedColumn() {
             this.isDefined = false;
         }
@@ -474,7 +474,7 @@ var CIFTools;
         }
         ParserResult.success = success;
     })(ParserResult = CIFTools.ParserResult || (CIFTools.ParserResult = {}));
-    var ParserError = (function () {
+    var ParserError = /** @class */ (function () {
         function ParserError(message, line) {
             this.message = message;
             this.line = line;
@@ -489,7 +489,7 @@ var CIFTools;
         return ParserError;
     }());
     CIFTools.ParserError = ParserError;
-    var ParserSuccess = (function () {
+    var ParserSuccess = /** @class */ (function () {
         function ParserSuccess(result, warnings) {
             this.result = result;
             this.warnings = warnings;
@@ -565,7 +565,7 @@ var CIFTools;
         /**
          * Represents the input file.
          */
-        var File = (function () {
+        var File = /** @class */ (function () {
             function File(data) {
                 /**
                  * Data blocks inside the file. If no data block is present, a "default" one is created.
@@ -582,7 +582,7 @@ var CIFTools;
         /**
          * Represents a single data block.
          */
-        var DataBlock = (function () {
+        var DataBlock = /** @class */ (function () {
             function DataBlock(data, header) {
                 this.header = header;
                 this.data = data;
@@ -627,7 +627,7 @@ var CIFTools;
         /**
          * Represents a single CIF category.
          */
-        var Category = (function () {
+        var Category = /** @class */ (function () {
             function Category(data, name, startIndex, endIndex, columns, tokens, tokenCount) {
                 this.name = name;
                 this.tokens = tokens;
@@ -686,7 +686,7 @@ var CIFTools;
         /**
          * Represents a single column of a CIF category.
          */
-        var Column = (function () {
+        var Column = /** @class */ (function () {
             function Column(category, data, name, index) {
                 this.data = data;
                 this.name = name;
@@ -811,7 +811,7 @@ var CIFTools;
                     case 9: // \t
                     case 10: // \n
                     case 13: // \r
-                    case 32:
+                    case 32: // ' '
                         state.currentTokenEnd = state.position;
                         return;
                     default:
@@ -840,7 +840,7 @@ var CIFTools;
                         case 9: // \t
                         case 10: // \n
                         case 13: // \r
-                        case 32:
+                        case 32: // ' '
                             // get rid of the quotes.
                             state.currentTokenStart++;
                             state.currentTokenEnd = state.position;
@@ -848,7 +848,7 @@ var CIFTools;
                             ++state.position;
                             return;
                         default:
-                            if (next === void 0) {
+                            if (next === void 0) { // = "end of stream"
                                 // get rid of the quotes.
                                 state.currentTokenStart++;
                                 state.currentTokenEnd = state.position;
@@ -878,7 +878,7 @@ var CIFTools;
             var prev = 59, pos = state.position + 1, c;
             while (pos < state.length) {
                 c = state.data.charCodeAt(pos);
-                if (c === 59 && (prev === 10 || prev === 13)) {
+                if (c === 59 && (prev === 10 || prev === 13)) { // ;, \n \r
                     state.position = pos + 1;
                     // get rid of the ;
                     state.currentTokenStart++;
@@ -895,10 +895,10 @@ var CIFTools;
                 }
                 else {
                     // handle line numbers
-                    if (c === 13) {
+                    if (c === 13) { // \r
                         state.currentLineNumber++;
                     }
-                    else if (c === 10 && prev !== 13) {
+                    else if (c === 10 && prev !== 13) { // \r\n
                         state.currentLineNumber++;
                     }
                     prev = c;
@@ -930,11 +930,11 @@ var CIFTools;
                 var c = state.data.charCodeAt(state.position);
                 switch (c) {
                     case 9: // '\t'
-                    case 32:
+                    case 32: // ' '
                         prev = c;
                         ++state.position;
                         break;
-                    case 10:
+                    case 10: // \n
                         // handle \r\n
                         if (prev !== 13) {
                             ++state.currentLineNumber;
@@ -942,7 +942,7 @@ var CIFTools;
                         prev = c;
                         ++state.position;
                         break;
-                    case 13:
+                    case 13: // \r
                         prev = c;
                         ++state.position;
                         ++state.currentLineNumber;
@@ -1028,7 +1028,7 @@ var CIFTools;
             }
             if (nsLen === tokenLen)
                 return true;
-            if (state.data.charCodeAt(i + offset) === 46) {
+            if (state.data.charCodeAt(i + offset) === 46) { // .
                 return true;
             }
             return false;
@@ -1070,18 +1070,18 @@ var CIFTools;
             state.isEscaped = false;
             var c = state.data.charCodeAt(state.position);
             switch (c) {
-                case 35:
+                case 35: // #, comment
                     skipCommentLine(state);
                     state.currentTokenType = 5 /* Comment */;
                     break;
                 case 34: // ", escaped value
-                case 39:
+                case 39: // ', escaped value
                     eatEscaped(state, c);
                     state.currentTokenType = 3 /* Value */;
                     break;
-                case 59:
+                case 59: // ;, possible multiline value
                     // multiline value must start at the beginning of the line.
-                    if (prev === 10 || prev === 13) {
+                    if (prev === 10 || prev === 13) { // /n or /r
                         eatMultiline(state);
                     }
                     else {
@@ -1096,7 +1096,7 @@ var CIFTools;
                         state.currentTokenType = 3 /* Value */;
                         // _ always means column name
                     }
-                    else if (state.data.charCodeAt(state.currentTokenStart) === 95) {
+                    else if (state.data.charCodeAt(state.currentTokenStart) === 95) { // _
                         state.currentTokenType = 4 /* ColumnName */;
                         // 5th char needs to be _ for data_ or loop_
                     }
@@ -1297,7 +1297,7 @@ var CIFTools;
     (function (Text) {
         "use strict";
         var StringWriter = CIFTools.Utils.StringWriter;
-        var Writer = (function () {
+        var Writer = /** @class */ (function () {
             function Writer() {
                 this.writer = StringWriter.create();
                 this.encoded = false;
@@ -1448,14 +1448,14 @@ var CIFTools;
                     case 9:
                         hasWhitespace = true;
                         break; // \t
-                    case 10:
+                    case 10: // \n
                         StringWriter.writeSafe(writer, '\n;' + val);
                         StringWriter.writeSafe(writer, '\n; ');
                         return;
                     case 32:
                         hasWhitespace = true;
                         break; // ' '
-                    case 34:
+                    case 34: // "
                         if (hasSingle) {
                             StringWriter.writeSafe(writer, '\n;' + val);
                             StringWriter.writeSafe(writer, '\n; ');
@@ -1466,7 +1466,7 @@ var CIFTools;
                         escapeCharStart = '\'';
                         escapeCharEnd = '\' ';
                         break;
-                    case 39:
+                    case 39: // '
                         if (hasDouble) {
                             StringWriter.writeSafe(writer, '\n;' + val);
                             StringWriter.writeSafe(writer, '\n; ');
@@ -1480,7 +1480,7 @@ var CIFTools;
                 }
             }
             var fst = val.charCodeAt(0);
-            if (!escape && (fst === 35 /* # */ || fst === 59 /* ; */ || hasWhitespace)) {
+            if (!escape && (fst === 35 /* # */ || fst === 36 /* $ */ || fst === 59 /* ; */ || fst === 91 /* [ */ || fst === 93 /* ] */ || hasWhitespace)) {
                 escapeCharStart = '\'';
                 escapeCharEnd = '\' ';
                 escape = true;
@@ -1502,16 +1502,16 @@ var CIFTools;
             for (var i = start; i < end - 1; i++) {
                 var c = data.charCodeAt(i);
                 switch (c) {
-                    case 10:
+                    case 10: // \n
                         StringWriter.writeSafe(writer, '\n;' + data.substring(start, end));
                         StringWriter.writeSafe(writer, '\n; ');
                         return;
-                    case 34:
+                    case 34: // "
                         escape = true;
                         escapeCharStart = '\'';
                         escapeCharEnd = '\' ';
                         break;
-                    case 39:
+                    case 39: // '
                         escape = true;
                         escapeCharStart = '"';
                         escapeCharEnd = '" ';
@@ -2114,14 +2114,17 @@ var CIFTools;
                     if ((byte & 0x80) === 0x00) {
                         chunk[chunkOffset++] = chars[byte];
                     }
+                    // Two byte character
                     else if ((byte & 0xe0) === 0xc0) {
                         chunk[chunkOffset++] = chars[((byte & 0x0f) << 6) | (data[++i] & 0x3f)];
                     }
+                    // Three byte character
                     else if ((byte & 0xf0) === 0xe0) {
                         chunk[chunkOffset++] = String.fromCharCode(((byte & 0x0f) << 12) |
                             ((data[++i] & 0x3f) << 6) |
                             ((data[++i] & 0x3f) << 0));
                     }
+                    // Four byte character
                     else if ((byte & 0xf8) === 0xf0) {
                         chunk[chunkOffset++] = String.fromCharCode(((byte & 0x07) << 18) |
                             ((data[++i] & 0x3f) << 12) |
@@ -2388,7 +2391,7 @@ var CIFTools;
     var Binary;
     (function (Binary) {
         "use strict";
-        var File = (function () {
+        var File = /** @class */ (function () {
             function File(data) {
                 this.dataBlocks = data.dataBlocks.map(function (b) { return new DataBlock(b); });
             }
@@ -2398,7 +2401,7 @@ var CIFTools;
             return File;
         }());
         Binary.File = File;
-        var DataBlock = (function () {
+        var DataBlock = /** @class */ (function () {
             function DataBlock(data) {
                 this.additionalData = {};
                 this.header = data.header;
@@ -2425,7 +2428,7 @@ var CIFTools;
             return DataBlock;
         }());
         Binary.DataBlock = DataBlock;
-        var Category = (function () {
+        var Category = /** @class */ (function () {
             function Category(data) {
                 this.name = data.name;
                 this.columnCount = data.columns.length;
@@ -2486,7 +2489,7 @@ var CIFTools;
         }
         var fastParseInt = CIFTools.Utils.FastNumberParsers.parseInt;
         var fastParseFloat = CIFTools.Utils.FastNumberParsers.parseFloat;
-        var NumericColumn = (function () {
+        var NumericColumn = /** @class */ (function () {
             function NumericColumn(data) {
                 this.data = data;
                 this.isDefined = true;
@@ -2499,7 +2502,7 @@ var CIFTools;
             NumericColumn.prototype.getValuePresence = function (row) { return 0 /* Present */; };
             return NumericColumn;
         }());
-        var MaskedNumericColumn = (function () {
+        var MaskedNumericColumn = /** @class */ (function () {
             function MaskedNumericColumn(data, mask) {
                 this.data = data;
                 this.mask = mask;
@@ -2513,7 +2516,7 @@ var CIFTools;
             MaskedNumericColumn.prototype.getValuePresence = function (row) { return this.mask[row]; };
             return MaskedNumericColumn;
         }());
-        var StringColumn = (function () {
+        var StringColumn = /** @class */ (function () {
             function StringColumn(data) {
                 this.data = data;
                 this.isDefined = true;
@@ -2526,7 +2529,7 @@ var CIFTools;
             StringColumn.prototype.getValuePresence = function (row) { return 0 /* Present */; };
             return StringColumn;
         }());
-        var MaskedStringColumn = (function () {
+        var MaskedStringColumn = /** @class */ (function () {
             function MaskedStringColumn(data, mask) {
                 this.data = data;
                 this.mask = mask;
@@ -2556,7 +2559,7 @@ var CIFTools;
          * Fixed point, delta, RLE, integer packing adopted from https://github.com/rcsb/mmtf-javascript/
          * by Alexander Rose <alexander.rose@weirdbyte.de>, MIT License, Copyright (c) 2016
          */
-        var Encoder = (function () {
+        var Encoder = /** @class */ (function () {
             function Encoder(providers) {
                 this.providers = providers;
             }
@@ -2589,6 +2592,7 @@ var CIFTools;
         }());
         Binary.Encoder = Encoder;
         (function (Encoder) {
+            var _a, _b;
             function by(f) {
                 return new Encoder([f]);
             }
@@ -2906,7 +2910,6 @@ var CIFTools;
                 };
             }
             Encoder.stringArray = stringArray;
-            var _a, _b;
         })(Encoder = Binary.Encoder || (Binary.Encoder = {}));
     })(Binary = CIFTools.Binary || (CIFTools.Binary = {}));
 })(CIFTools || (CIFTools = {}));
@@ -3042,7 +3045,7 @@ var CIFTools;
                 mask: maskData
             };
         }
-        var Writer = (function () {
+        var Writer = /** @class */ (function () {
             function Writer(encoder) {
                 this.dataBlocks = [];
                 this.data = {
